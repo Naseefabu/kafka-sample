@@ -30,8 +30,7 @@ order_book = {
 def orderbook_message_handler(symbol,message): 
     
     print(symbol,symbols_dict[symbol])
-
-    # producer.send()
+    producer.send("binance-orderbook",message,partition=symbols_dict[symbol])
 
 
 def listen_binance_orderbook(symbol):
@@ -64,9 +63,10 @@ def main():
         admin.create_topics([topic])
     except Exception:
         pass
-    
+
     processes = []
     for key, value in symbols_dict.items():
+        # multiprocessing helps to bypass GIL 
         p = multiprocessing.Process(target=listen_binance_orderbook, args=(key,))
         processes.append(p)
 
