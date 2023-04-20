@@ -29,9 +29,9 @@ order_book = {
 
 def orderbook_message_handler(symbol,message): 
     
-    print(symbol,symbols_dict[symbol])
-    producer.send("binance-orderbook",message,partition=symbols_dict[symbol])
-
+    # print(symbol,symbols_dict[symbol])
+    result = producer.send("binance-orderbook",message,partition=symbols_dict[symbol])
+    print("result: ",result)
 
 def listen_binance_orderbook(symbol):
     ws_client.start()
@@ -80,3 +80,38 @@ def main():
 
 
 main()
+
+#################
+
+# # create an admin client instance
+# admin_client = KafkaAdminClient(
+#     bootstrap_servers=['localhost:9092'] # Kafka broker(s) connection string
+# )
+
+# # create a new topic
+# try:
+#     topic = NewTopic(
+#         name='my_topic',
+#         num_partitions=1,
+#         replication_factor=1
+#     )
+#     admin_client.create_topics([topic])
+# except Exception:
+#     pass
+
+# # create a KafkaProducer instance
+# producer = KafkaProducer(
+#     bootstrap_servers=['localhost:9092'], # Kafka broker(s) connection string
+#     value_serializer=lambda v: json.dumps(v).encode('utf-8') # serialize messages as JSON
+# )
+
+# # send events
+# while True:
+#     event1 = {'event_type': 'user_created', 'user_id': 1234, 'timestamp': '2023-04-20T10:00:00Z'}
+#     producer.send('my_topic', event1)
+
+#     event2 = {'event_type': 'user_updated', 'user_id': 1234, 'timestamp': '2023-04-20T11:00:00Z'}
+#     producer.send('my_topic', event2)
+
+
+

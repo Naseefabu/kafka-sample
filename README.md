@@ -1,51 +1,25 @@
 
+# Event-Driven Algorithmic Trading using Kafka
+This project is an event-driven algorithmic trading system sample implementation using Kafka. The system receives raw exchange data via WebSockets, parses and normalizes order book (OB) events, and publishes those events via Kafka topics. Consumers (strategies) read from these topics, build the order book, create signals, and place orders. Additionally, the system uses separate JSON files containing partition maps for each symbol to allow consumers to subscribe to specific symbols of interest.
 
 
+## Architecture Overview
 
+The system is built on top of the Kafka message broker, which provides a distributed, fault-tolerant, and scalable platform for handling high volumes of real-time data.
 
-# instructions
+Producers: Programs that receive raw exchange data via WebSockets, parse and normalize OB events, and publish those events to Kafka topics based on the symbol being traded. The system supports sharding by symbol using Kafka topic partitions, allowing for efficient storage and retrieval of OB data.
 
+To map symbols to their corresponding partitions, the system uses JSON configuration files. For example, the binance-config.json file might look like this:
+```
+{
+  "btcusdt": 0,
+  "apeusdt": 1
+}
+```
+This file maps the btcusdt symbol to partition 0 and the apeusdt symbol to partition 1 under the binance-orderbook topic. Consumers can subscribe to the specific partitions they are interested in based on the symbol they want to trade.
 
+Broker: The Kafka message broker that handles the distribution and storage of the OB events.
 
+Consumers :  Programs that listens to the Kafka topic (for example, binance-orderbook) and then listen to specific symbols by consuming data from the partitions defined in the partition maps of the JSON config file. The received data is used to create an order book in memory and generate signals for trading decisions.
 
-# misc
-
-download apache : https://kafka.apache.org/
-sudo apt update
-
-Every broker on a Kafka cluster is also named a Bootstrap Server. All brokers have the metadata required for the clients (producer or consumer) to discover brokers. When a client connects to one of the brokers (which are already configured as bootstrap servers in the Kafka configuration) it makes a "metadata request". The response includes information about topics, partitions, leader brokers, etc. Once the client gets this info, then - in the case of a producer- it makes the write request directly to the leader broker for that specific partition.
-
-
-
-Topics:
-
-Topic : binance-trade
-Partitions : symbols
-
-Topic : binance-orderbook
-Partitions : symbols
-
-Topic : binance-delta
-Partitions : symbols
-
-Topic : coinbase-trade
-Partitions : symbols
-
-Topic : coinbase-orderbook
-Partitions : symbols
-
-Topic : coinbase-delta
-Partitions : symbols
-
-Topic : kraken-trade
-Partitions : symbols
-
-Topic : kraken-orderbook
-Partitions : symbols
-
-Topic : kraken-delta
-Partitions : symbols
-
-
-
-Run the consumer first 
+For best latency, it is recommended to run the producers(Distributed exchange connectors) in AWS regions where the specific crypto exchange is located. This will minimize network latency and ensure timely delivery of real-time market data.
