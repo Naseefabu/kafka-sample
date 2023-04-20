@@ -10,7 +10,7 @@ consumer = KafkaConsumer(
 )
 
 # assign to a specific partition of the topic
-partition = TopicPartition('binance-orderbook', 0)
+partition = TopicPartition('binance-orderbook', 1)
 consumer.assign([partition])
 
 # seek to the beginning of the partition

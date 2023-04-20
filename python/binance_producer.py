@@ -14,7 +14,7 @@ import os
 def json_serializer(data):
     return json.dumps(data).encode("utf-8")
 
-producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=json_serializer)
+#producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=json_serializer)
 
 base_url = 'https://api.binance.com'
 stream_url = 'wss://stream.binance.com:9443/ws'
@@ -27,20 +27,21 @@ order_book = {
 }
 
 
-def orderbook_message_handler(symbol,message): 
+def orderbook_message_handler(symbol,message,producer): 
     
     # print(symbol,symbols_dict[symbol])
     result = producer.send("binance-orderbook",message,partition=symbols_dict[symbol])
     print("result: ",result)
 
 def listen_binance_orderbook(symbol):
+    producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=json_serializer)
     ws_client.start()
     symbol = symbol.lower()
     ws_client.diff_book_depth(
         symbol=symbol.lower(),
         id=1,
         speed=1000,
-        callback=lambda message: orderbook_message_handler(symbol, message)
+        callback=lambda message: orderbook_message_handler(symbol, message, producer)
     )
 
 def load_symbols():
@@ -63,7 +64,8 @@ def main():
         admin.create_topics([topic])
     except Exception:
         pass
-
+    symb = 'btcusdt'
+    # listen_binance_orderbook(symb)
     processes = []
     for key, value in symbols_dict.items():
         # multiprocessing helps to bypass GIL 
