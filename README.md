@@ -28,7 +28,7 @@ For best latency, it is recommended to run the producers(Distributed exchange co
 
 Before running the producers and consumers, you need to start the Kafka broker and ZooKeeper on your local machine. In this case, both Kafka broker and ZooKeeper can be run on the localhost. However, if you choose to run the brokers on a different machine, you can provide the machine's IP address instead of localhost.
 
-To start ZooKeeper, run the following command:
+To start ZooKeeper, navigate to the Kafka directory and run the following command:
 ```
 bin/zookeeper-server-start.sh config/zookeeper.properties
 ```
