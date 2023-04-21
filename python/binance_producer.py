@@ -31,9 +31,10 @@ def orderbook_message_handler(symbol,message,producer):
     
     # print(symbol,symbols_dict[symbol])
     result = producer.send("binance-orderbook",message,partition=symbols_dict[symbol])
-    print("result: ",result)
+    print("{} Market data is sent ".format(symbol))
 
 def listen_binance_orderbook(symbol):
+    print("starting the binance datafeed for symbol {}".format(symbol))
     producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=json_serializer)
     ws_client.start()
     symbol = symbol.lower()
