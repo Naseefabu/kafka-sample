@@ -93,7 +93,3 @@ def get_orderbook_datafeed(exchange, symbol):
         raise RuntimeError("Exchange connector is not implemented. Please input valid exchange name")   
     
 
-
-
-
-# sample fix it later
