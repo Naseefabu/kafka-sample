@@ -15,21 +15,21 @@ async def subscribe_orderbook(symbol, symbols_partition_map):
     producer = KafkaProducer(
         bootstrap_servers=["localhost:9092"], value_serializer=json_serializer
     )
-    exchange = ccxt.pro.binance({"enableRateLimit": True, "rateLimit": 1000})
+    exchange = ccxt.pro.bitfinex({"enableRateLimit": True, "rateLimit": 1000})
     while True:
         snapshot = await exchange.watch_order_book(symbol)
         result = producer.send(
-            "binance-orderbook", snapshot, partition=symbols_partition_map[symbol]
+            "bitfinex-orderbook", snapshot, partition=symbols_partition_map[symbol]
         )
         print(snapshot)
 
 
-def run_binance_feed(symbols_partition_map):
+def run_bitfinex_feed(symbols_partition_map):
     try:
         admin = KafkaAdminClient(bootstrap_servers="localhost:9092")
 
         topic = NewTopic(
-            name="binance-orderbook",
+            name="bitfinex-orderbook",
             num_partitions=len(symbols_partition_map),
             replication_factor=1,
         )
@@ -65,7 +65,7 @@ def run_event_loop(symbols, symbols_partition_map):
 
 
 def load_symbols_partition_map():
-    with open("binance_config.json") as f:
+    with open("bitfinex_config.json") as f:
         data = json.load(f)
     symbol_dict = {symbol: number for symbol, number in data.items()}
     return symbol_dict
@@ -73,11 +73,9 @@ def load_symbols_partition_map():
 
 # symbols to subscribe
 symbols = load_symbols_partition_map()
-run_binance_feed(symbols)
+run_bitfinex_feed(symbols)
 
-
-
-# exchange = ccxt.binance()
+# exchange = ccxt.bitfinex()
 # markets = exchange.load_markets()
 
 # print(markets.keys())

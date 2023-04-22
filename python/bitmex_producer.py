@@ -1,40 +1,54 @@
-import ccxt.pro
-import ccxt
-import json
-import asyncio
 import multiprocessing as mp
-from kafka.admin import KafkaAdminClient, NewTopic
+import asyncio
+import json
+import ccxt
+import ccxt.pro
 from kafka import KafkaProducer
+from kafka.admin import KafkaAdminClient, NewTopic
+
 
 def json_serializer(data):
     return json.dumps(data).encode("utf-8")
 
-async def subscribe_orderbook(symbol,symbols_partition_map):
-    producer = KafkaProducer(bootstrap_servers=['localhost:9092'],value_serializer=json_serializer)
-    exchange = ccxt.pro.bitmex({
-        'enableRateLimit': True,
-        'rateLimit': 1000
-    })
+
+async def subscribe_orderbook(symbol, symbols_partition_map):
+    producer = KafkaProducer(
+        bootstrap_servers=["localhost:9092"], value_serializer=json_serializer
+    )
+    exchange = ccxt.pro.bitmex({"enableRateLimit": True, "rateLimit": 1000})
     while True:
         snapshot = await exchange.watch_order_book(symbol)
-        result = producer.send("bitmex-orderbook",snapshot,partition=symbols_partition_map[symbol])
+        result = producer.send(
+            "bitmex-orderbook", snapshot, partition=symbols_partition_map[symbol]
+        )
         print(snapshot)
 
-def run_kraken_feed(symbols_partition_map):
 
+def run_bitmex_feed(symbols_partition_map):
     try:
-        admin = KafkaAdminClient(bootstrap_servers='localhost:9092')
+        admin = KafkaAdminClient(bootstrap_servers="localhost:9092")
 
-        topic = NewTopic(name='bitmex-orderbook',
-                            num_partitions=len(symbols_partition_map),
-                            replication_factor=1)
+        topic = NewTopic(
+            name="bitmex-orderbook",
+            num_partitions=len(symbols_partition_map),
+            replication_factor=1,
+        )
         admin.create_topics([topic])
     except Exception:
         pass
 
+    num_cores = mp.cpu_count()
     processes = []
-    for symbol in symbols_partition_map.keys():
-        p = mp.Process(target=asyncio.run, args=(subscribe_orderbook(symbol,symbols_partition_map),))
+    symbols = list(symbols_partition_map.keys())
+    for i in range(num_cores):
+        symbols_per_process = symbols[i::num_cores]
+        p = mp.Process(
+            target=run_event_loop,
+            args=(
+                symbols_per_process,
+                symbols_partition_map,
+            ),
+        )
         processes.append(p)
         p.start()
 
@@ -42,15 +56,24 @@ def run_kraken_feed(symbols_partition_map):
         p.join()
 
 
+def run_event_loop(symbols, symbols_partition_map):
+    asyncio.set_event_loop(asyncio.new_event_loop())
+    loop = asyncio.get_event_loop()
+    for symbol in symbols:
+        loop.create_task(subscribe_orderbook(symbol, symbols_partition_map))
+    loop.run_forever()
+
+
 def load_symbols_partition_map():
-    with open('bitmex_config.json') as f:
+    with open("bitmex_config.json") as f:
         data = json.load(f)
     symbol_dict = {symbol: number for symbol, number in data.items()}
     return symbol_dict
 
+
 # symbols to subscribe
 symbols = load_symbols_partition_map()
-run_kraken_feed(symbols)
+run_bitmex_feed(symbols)
 
 
 # exchange = ccxt.bitmex()
