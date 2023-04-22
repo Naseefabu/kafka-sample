@@ -19,7 +19,8 @@ This project is an event-driven algorithmic trading system implemented using Kaf
   JMX_PORT=8004 bin/kafka-server-start.sh config/server.properties 
   ```
 
-### 2. Create a symbols partition map for each exchange in the following format:
+  ### Step 2: Create Symbols Partition Map
+  1. Create a symbols partition map for each exchange in the following format:
 
     binance_config.json :
     ```
