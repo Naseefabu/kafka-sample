@@ -12,7 +12,9 @@ def get_orderbook_datafeed(exchange, symbol):
             raise RuntimeError("Symbol in binance exchange is not found. Please input valid symbol")
         consumer = KafkaConsumer(bootstrap_servers=['localhost:9092'],
                             group_id='strategy-marketmaking-binance',
-                            auto_offset_reset='latest' # reads latest snapshot value only
+                            enable_auto_commit=False,
+                            auto_offset_reset='latest', # reads latest snapshot value only
+                            max_poll_records=1 # one at a time
                             )
         topic = "binance"+"-orderbook"
         partition = TopicPartition(topic, symbol_dict[symbol])
@@ -27,7 +29,9 @@ def get_orderbook_datafeed(exchange, symbol):
             raise RuntimeError("Symbol in coinbase exchange is not found. Please input valid symbol")
         consumer = KafkaConsumer(bootstrap_servers=['localhost:9092'],
                             group_id='strategy-marketmaking-coinbase', 
-                            auto_offset_reset='latest' # reads latest snapshot value only
+                            enable_auto_commit=False,
+                            auto_offset_reset='latest', # reads latest snapshot value only
+                            max_poll_records=1 # one at a time
                             )
         topic = "coinbase"+"-orderbook"
         partition = TopicPartition(topic, symbol_dict[symbol])
@@ -41,7 +45,9 @@ def get_orderbook_datafeed(exchange, symbol):
             raise RuntimeError("Symbol in kraken exchange is not found. Please input valid symbol")
         consumer = KafkaConsumer(bootstrap_servers=['localhost:9092'],
                             group_id='strategy-marketmaking-kraken', 
-                            auto_offset_reset='latest' # reads latest snapshot value only
+                            enable_auto_commit=False,
+                            auto_offset_reset='latest', # reads latest snapshot value only
+                            max_poll_records=1 # one at a time
                             )
         topic = "kraken"+"-orderbook"
         partition = TopicPartition(topic, symbol_dict[symbol])
@@ -55,7 +61,9 @@ def get_orderbook_datafeed(exchange, symbol):
             raise RuntimeError("Symbol in bitmex exchange is not found. Please input valid symbol")
         consumer = KafkaConsumer(bootstrap_servers=['localhost:9092'],
                             group_id='strategy-marketmaking-bitmex', 
-                            auto_offset_reset='latest' # reads latest snapshot value only
+                            enable_auto_commit=False,
+                            auto_offset_reset='latest', # reads latest snapshot value only
+                            max_poll_records=1 # one at a time
                             )
         topic = "bitmex"+"-orderbook"
         partition = TopicPartition(topic, symbol_dict[symbol])
@@ -69,7 +77,9 @@ def get_orderbook_datafeed(exchange, symbol):
             raise RuntimeError("Symbol in bybit exchange is not found. Please input valid symbol")
         consumer = KafkaConsumer(bootstrap_servers=['localhost:9092'],
                             group_id='strategy-marketmaking-bybit', 
-                            auto_offset_reset='latest' # reads latest snapshot value only
+                            enable_auto_commit=False,
+                            auto_offset_reset='latest', # reads latest snapshot value only
+                            max_poll_records=1 # one at a time
                             )
         topic = "bybit"+"-orderbook"
         partition = TopicPartition(topic, symbol_dict[symbol])
@@ -83,7 +93,9 @@ def get_orderbook_datafeed(exchange, symbol):
             raise RuntimeError("Symbol in bitfinex exchange is not found. Please input valid symbol")
         consumer = KafkaConsumer(bootstrap_servers=['localhost:9092'],
                             group_id='strategy-marketmaking-bitfinex', 
-                            auto_offset_reset='latest' # reads latest snapshot value only
+                            enable_auto_commit=False,
+                            auto_offset_reset='latest', # reads latest snapshot value only
+                            max_poll_records=1, # one at a time
                             )
         topic = "bitfinex"+"-orderbook"
         partition = TopicPartition(topic, symbol_dict[symbol])

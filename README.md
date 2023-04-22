@@ -36,7 +36,14 @@ This project is an event-driven algorithmic trading system implemented using Kaf
   ### Step 3: Start Producers and Consumers
 
   1. Run the producers, such as binance_producer.py, coinbase_producer.py, and bitmex_producer.py. For best performance, it is recommended to run these producers in their own AWS regions where the exchange servers are located.
+  example : 
+  ```
+  python3 binance_producer.py
+  ```
   2. Run the consumers (strategies) to subscribe to specific symbols of interest and build the order book, create signals, and place orders.
+  ```
+  python3 strategy_consumer.py
+  ```
 
   ## Kafka Topic Format
 
