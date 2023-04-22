@@ -17,7 +17,6 @@ class market_making:
 
     def run(self):
         for msg in self.datafeed:
-            val = 0
             print(msg.value)
             print("consuming the market data from {} symbol {}".format(self.exchange,self.symbol))
 

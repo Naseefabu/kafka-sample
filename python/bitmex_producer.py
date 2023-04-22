@@ -1,6 +1,7 @@
 import multiprocessing as mp
 import asyncio
 import json
+import os
 import ccxt
 import ccxt.pro
 from kafka import KafkaProducer
@@ -42,7 +43,7 @@ def run_bitmex_feed(symbols_partition_map):
     symbols = list(symbols_partition_map.keys())
     for i in range(num_cores):
         symbols_per_process = symbols[i::num_cores]
-        if not symbols_per_process:
+        if not symbols_per_process: # if number of cores greater than number of symbols
             continue
         p = mp.Process(
             target=run_event_loop,
@@ -53,6 +54,7 @@ def run_bitmex_feed(symbols_partition_map):
         )
         processes.append(p)
         p.start()
+        os.sched_setaffinity(p.pid, [i])
 
     for p in processes:
         p.join()

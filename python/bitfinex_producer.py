@@ -1,6 +1,7 @@
 import multiprocessing as mp
 import asyncio
 import json
+import os
 import ccxt
 import ccxt.pro
 from kafka import KafkaProducer
@@ -53,6 +54,7 @@ def run_bitfinex_feed(symbols_partition_map):
         )
         processes.append(p)
         p.start()
+        os.sched_setaffinity(p.pid, [i])
 
     for p in processes:
         p.join()

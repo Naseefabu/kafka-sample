@@ -62,7 +62,7 @@ This project is an event-driven algorithmic trading system implemented using Kaf
 
 ### Producers
 
-  Producers (e.g., binance_producer.py, coinbase_producer.py) in this project use a multiprocessing approach based on the number of cores available on the machine. Instead of creating a separate process for each symbol's WebSocket subscription, we create one process per core, with each process having a single big event loop where specific symbols' WebSocket tasks are run. This approach allows us to distribute the workload across multiple cores and take full advantage of the available hardware resources. Additionally, we set the process core affinity to avoid context switch overheads, which further improves the performance of the producers.
+  Producers (e.g., binance_producer.py, coinbase_producer.py) in this project use a multiprocessing approach based on the number of cores available on the machine. Instead of creating a separate process for each symbol's WebSocket subscription, we create one process per core, with each process having a single big event loop where specific symbols' WebSocket tasks are run. This approach allows us to distribute the workload across multiple cores and take full advantage of the available hardware resources. Additionally, we set the process core affinity to avoid context switch overheads and optimizing cache performance, forcing a process to run on a specific processor helps in reducing the latency caused by cache misses.
 
   For best latency, it is recommended to run the producers(Distributed  exchange connectors) in AWS regions where the specific crypto exchange is located. This will minimize network latency and ensure timely delivery of real-time market data.
 

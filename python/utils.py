@@ -12,7 +12,7 @@ def get_orderbook_datafeed(exchange, symbol):
             raise RuntimeError("Symbol in binance exchange is not found. Please input valid symbol")
         consumer = KafkaConsumer(bootstrap_servers=['localhost:9092'],
                             group_id='strategy-marketmaking-binance',
-                            auto_offset_reset='latest'
+                            auto_offset_reset='latest' # reads latest snapshot value only
                             )
         topic = "binance"+"-orderbook"
         partition = TopicPartition(topic, symbol_dict[symbol])
@@ -27,7 +27,7 @@ def get_orderbook_datafeed(exchange, symbol):
             raise RuntimeError("Symbol in coinbase exchange is not found. Please input valid symbol")
         consumer = KafkaConsumer(bootstrap_servers=['localhost:9092'],
                             group_id='strategy-marketmaking-coinbase', 
-                            auto_offset_reset='latest'
+                            auto_offset_reset='latest' # reads latest snapshot value only
                             )
         topic = "coinbase"+"-orderbook"
         partition = TopicPartition(topic, symbol_dict[symbol])
@@ -40,8 +40,8 @@ def get_orderbook_datafeed(exchange, symbol):
         if symbol not in symbol_dict.keys():
             raise RuntimeError("Symbol in kraken exchange is not found. Please input valid symbol")
         consumer = KafkaConsumer(bootstrap_servers=['localhost:9092'],
-                            group_id='strategy-marketmaking-kraken', # fix ?
-                            auto_offset_reset='latest'
+                            group_id='strategy-marketmaking-kraken', 
+                            auto_offset_reset='latest' # reads latest snapshot value only
                             )
         topic = "kraken"+"-orderbook"
         partition = TopicPartition(topic, symbol_dict[symbol])
@@ -54,8 +54,8 @@ def get_orderbook_datafeed(exchange, symbol):
         if symbol not in symbol_dict.keys():
             raise RuntimeError("Symbol in bitmex exchange is not found. Please input valid symbol")
         consumer = KafkaConsumer(bootstrap_servers=['localhost:9092'],
-                            group_id='strategy-marketmaking-bitmex', # fix ?
-                            auto_offset_reset='latest'
+                            group_id='strategy-marketmaking-bitmex', 
+                            auto_offset_reset='latest' # reads latest snapshot value only
                             )
         topic = "bitmex"+"-orderbook"
         partition = TopicPartition(topic, symbol_dict[symbol])
@@ -68,8 +68,8 @@ def get_orderbook_datafeed(exchange, symbol):
         if symbol not in symbol_dict.keys():
             raise RuntimeError("Symbol in bybit exchange is not found. Please input valid symbol")
         consumer = KafkaConsumer(bootstrap_servers=['localhost:9092'],
-                            group_id='strategy-marketmaking-bybit', # fix ?
-                            auto_offset_reset='latest'
+                            group_id='strategy-marketmaking-bybit', 
+                            auto_offset_reset='latest' # reads latest snapshot value only
                             )
         topic = "bybit"+"-orderbook"
         partition = TopicPartition(topic, symbol_dict[symbol])
@@ -82,8 +82,8 @@ def get_orderbook_datafeed(exchange, symbol):
         if symbol not in symbol_dict.keys():
             raise RuntimeError("Symbol in bitfinex exchange is not found. Please input valid symbol")
         consumer = KafkaConsumer(bootstrap_servers=['localhost:9092'],
-                            group_id='strategy-marketmaking-bybit', # fix ?
-                            auto_offset_reset='latest'
+                            group_id='strategy-marketmaking-bitfinex', 
+                            auto_offset_reset='latest' # reads latest snapshot value only
                             )
         topic = "bitfinex"+"-orderbook"
         partition = TopicPartition(topic, symbol_dict[symbol])

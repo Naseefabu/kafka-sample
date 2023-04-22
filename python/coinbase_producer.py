@@ -2,6 +2,7 @@ import multiprocessing as mp
 import asyncio
 import json
 import ccxt
+import os
 import ccxt.pro
 from kafka import KafkaProducer
 from kafka.admin import KafkaAdminClient, NewTopic
@@ -53,6 +54,7 @@ def run_coinbase_feed(symbols_partition_map):
         )
         processes.append(p)
         p.start()
+        os.sched_setaffinity(p.pid, [i]) # process core affinity
 
     for p in processes:
         p.join()
