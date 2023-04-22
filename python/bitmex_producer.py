@@ -38,7 +38,7 @@ def run_bitmex_feed(symbols_partition_map):
     except Exception:
         pass
 
-    num_cores = mp.cpu_count()
+    num_cores = mp.cpu_count() # number of cores
     processes = []
     symbols = list(symbols_partition_map.keys())
     for i in range(num_cores):
