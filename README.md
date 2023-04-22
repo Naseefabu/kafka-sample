@@ -22,7 +22,7 @@ This project is an event-driven algorithmic trading system implemented using Kaf
   ### Step 2: Create Symbols Partition Map
   1. Create a symbols partition map for each exchange in the following format:
 
-    binance_config.json:
+    binance_config.json 
     ```
     {
       "SOL/USDT":0,
