@@ -7,6 +7,7 @@ This project is an event-driven algorithmic trading system implemented using Kaf
 ### 1. Install and run Kafka and Zookeeper on your local machine or any other machine.
 
     To start ZooKeeper, navigate to the Kafka directory and run the following command:
+
     ```
     bin/zookeeper-server-start.sh config/zookeeper.properties
     ```
@@ -14,39 +15,40 @@ This project is an event-driven algorithmic trading system implemented using Kaf
     ```
     bin/kafka-server-start.sh config/server.properties
     ```
+
     Once the Kafka broker and ZooKeeper are up and running, you can start the producers and consumers.
 
-2. Create a symbols partition map for each exchange in the following format:
+### 2. Create a symbols partition map for each exchange in the following format:
 
-  binance_config.json :
-  ```
-  {
-  "SOL/USDT": 0,
-  "APE/USD": 1
-  }
-  ```
-  bitfinex_config.json :
-  ```
-  {
-  "ETH/BTC": 0,
-  "ETH/USDT": 1
-  }
-  ```
-  
-  The symbols partition map is an essential aspect of this project. It's like a JSON file inside the project directory that tells you which partition ID does a specific symbol takes in a particular topic. For example, in the binance-orderbook topic, we may have a lot of partitions based on symbols in the Binance exchange, so the partition map will tell you what symbol and its partition ID so that consumers can identify them easily.
+    binance_config.json :
+    ```
+    {
+    "SOL/USDT": 0,
+    "APE/USD": 1
+    }
+    ```
+    bitfinex_config.json :
+    ```
+    {
+    "ETH/BTC": 0,
+    "ETH/USDT": 1
+    }
+    ```
+    
+    The symbols partition map is an essential aspect of this project. It's like a JSON file inside the project directory that tells you which partition ID does a specific symbol takes in a particular topic. For example, in the binance-orderbook topic, we may have a lot of partitions based on symbols in the Binance exchange, so the partition map will tell you what symbol and its partition ID so that consumers can identify them easily.
 
-3. The orderbook topic format for each exchange is as follows:
+### 3. The orderbook topic format for each exchange is as follows:
 
-  exchangename-orderbook
+    exchangename-orderbook
 
-  For example:
-  binance-orderbook
-  coinbase-orderbook
-  bitmex-orderbook
+    For example:
+    binance-orderbook
+    coinbase-orderbook
+    bitmex-orderbook
 
-4. This project uses ccxt pro for websocket feed.
+### 4. This project uses ccxt pro for websocket feed.
 
-5. There are multiple producers in this project, such as binance_producer.py, coinbase_producer.py, and bitmex_producer.py. For best performance, it is recommended to run these producers in their own AWS regions where the exchange servers are located.
+### 5. There are multiple producers in this project, such as binance_producer.py, coinbase_producer.py, and bitmex_producer.py. For best performance, it is recommended to run these producers in their own AWS regions where the exchange servers are located.
 
 
 
