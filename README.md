@@ -5,17 +5,19 @@ This project is an event-driven algorithmic trading system implemented using Kaf
 # Getting Started 
 
 ## Prerequisites
-  * To start ZooKeeper, navigate to the Kafka directory and run the following command:
+  * Kafka and Zookeeper installed and running on your local machine or any other machine (for fault tolerance).
+  * Install ccxtpro
 
-    ```
-    bin/zookeeper-server-start.sh config/zookeeper.properties
-    ```
-    Next, start the Kafka broker by running the following command:
-    ```
-    bin/kafka-server-start.sh config/server.properties
-    ```
-
-    Once the Kafka broker and ZooKeeper are up and running, you can start the producers and consumers.
+## Usage 
+  ### Step 1: Start ZooKeeper and Kafka Broker
+  1. To start ZooKeeper, navigate to the Kafka directory and run the following command:
+  ```
+  bin/zookeeper-server-start.sh config/zookeeper.properties
+  ```
+  2. Next, start the Kafka broker by running the following command
+  ```
+  JMX_PORT=8004 bin/kafka-server-start.sh config/server.properties 
+  ```
 
 ### 2. Create a symbols partition map for each exchange in the following format:
 
