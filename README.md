@@ -5,47 +5,48 @@ This project is an event-driven algorithmic trading system implemented using Kaf
 # Getting Started 
 
 1. Install and run Kafka and Zookeeper on your local machine or any other machine.
-    To start ZooKeeper, navigate to the Kafka directory and run the following command:
-    ```
-    bin/zookeeper-server-start.sh config/zookeeper.properties
-    ```
-    Next, start the Kafka broker by running the following command:
-    ```
-    bin/kafka-server-start.sh config/server.properties
-    ```
-Once the Kafka broker and ZooKeeper are up and running, you can start the producers and consumers.
+
+  To start ZooKeeper, navigate to the Kafka directory and run the following command:
+  ```
+  bin/zookeeper-server-start.sh config/zookeeper.properties
+  ```
+  Next, start the Kafka broker by running the following command:
+  ```
+  bin/kafka-server-start.sh config/server.properties
+  ```
+  Once the Kafka broker and ZooKeeper are up and running, you can start the producers and consumers.
+
 2. Create a symbols partition map for each exchange in the following format:
 
-    binance_config.json :
-    ```
-    {
-    "SOL/USDT": 0,
-    "APE/USD": 1
-    }
-    ```
-    bitfinex_config.json :
-    ```
-    {
-    "ETH/BTC": 0,
-    "ETH/USDT": 1
-    }
-    ```
-    The symbols partition map is an essential aspect of this project. It's like a JSON file inside the project directory that tells you which partition ID does a specific symbol takes in a particular topic. For example, in the binance-orderbook topic, we may have a lot of partitions based on symbols in the Binance exchange, so the partition map will tell you what symbol and its partition ID so that consumers can identify them easily.
+  binance_config.json :
+  ```
+  {
+  "SOL/USDT": 0,
+  "APE/USD": 1
+  }
+  ```
+  bitfinex_config.json :
+  ```
+  {
+  "ETH/BTC": 0,
+  "ETH/USDT": 1
+  }
+  ```
+  
+  The symbols partition map is an essential aspect of this project. It's like a JSON file inside the project directory that tells you which partition ID does a specific symbol takes in a particular topic. For example, in the binance-orderbook topic, we may have a lot of partitions based on symbols in the Binance exchange, so the partition map will tell you what symbol and its partition ID so that consumers can identify them easily.
 
 3. The orderbook topic format for each exchange is as follows:
 
-    exchangename-orderbook
+  exchangename-orderbook
 
-    For example:
-    binance-orderbook
-    coinbase-orderbook
-    bitmex-orderbook
+  For example:
+  binance-orderbook
+  coinbase-orderbook
+  bitmex-orderbook
 
-4. Each topic may have multiple partitions based on the symbols interested in that exchange.
+4. This project uses ccxt pro for websocket feed.
 
-5. This project uses ccxt pro for websocket feed.
-
-6. There are multiple producers in this project, such as binance_producer.py, coinbase_producer.py, and bitmex_producer.py. For best performance, it is recommended to run these producers in their own AWS regions where the exchange servers are located.
+5. There are multiple producers in this project, such as binance_producer.py, coinbase_producer.py, and bitmex_producer.py. For best performance, it is recommended to run these producers in their own AWS regions where the exchange servers are located.
 
 
 
@@ -79,3 +80,9 @@ For best latency, it is recommended to run the producers(Distributed exchange co
 ## Running the System
 
 Before running the producers and consumers, you need to start the Kafka broker and ZooKeeper on your local machine. In this case, both Kafka broker and ZooKeeper can be run on the localhost. However, if you choose to run the brokers on a different machine, you can provide the machine's IP address instead of localhost.
+
+
+
+
+
+
