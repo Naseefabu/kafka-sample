@@ -21,14 +21,7 @@ This project is an event-driven algorithmic trading system implemented using Kaf
 
   ### Step 2: Create Symbols Partition Map
   1. Create a symbols partition map for each exchange in the following format:
-
-    binance_config.json 
-    ```
-    {
-      "SOL/USDT":0,
-      "APE/USD":1
-    }
-    ```
+    hello world 
 
 
     The symbols partition maps is an essential aspect of this project. It's like a JSON file inside the project directory that tells you which partition ID does a specific symbol takes in a particular topic. For example, in the binance-orderbook topic, we may have a lot of partitions based on symbols in the Binance exchange, so the partition map will tell you what symbol and its partition ID so that consumers can identify them easily.
