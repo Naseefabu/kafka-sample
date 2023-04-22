@@ -42,6 +42,8 @@ def run_binance_feed(symbols_partition_map):
     symbols = list(symbols_partition_map.keys())
     for i in range(num_cores):
         symbols_per_process = symbols[i::num_cores]
+        if not symbols_per_process: # if number of cores greater than number of symbols
+            continue
         p = mp.Process(
             target=run_event_loop,
             args=(

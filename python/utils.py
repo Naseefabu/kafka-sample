@@ -75,6 +75,20 @@ def get_orderbook_datafeed(exchange, symbol):
         partition = TopicPartition(topic, symbol_dict[symbol])
         consumer.assign([partition])
         return consumer
+    elif (exchange == "bitfinex"):
+        with open('bitfinex_config.json') as f:
+            data = json.load(f)
+        symbol_dict = {symbol: number for symbol, number in data.items()}
+        if symbol not in symbol_dict.keys():
+            raise RuntimeError("Symbol in bitfinex exchange is not found. Please input valid symbol")
+        consumer = KafkaConsumer(bootstrap_servers=['localhost:9092'],
+                            group_id='strategy-marketmaking-bybit', # fix ?
+                            auto_offset_reset='latest'
+                            )
+        topic = "bitfinex"+"-orderbook"
+        partition = TopicPartition(topic, symbol_dict[symbol])
+        consumer.assign([partition])
+        return consumer
     else:
         raise RuntimeError("Exchange connector is not implemented. Please input valid exchange name")   
     
