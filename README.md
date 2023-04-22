@@ -4,7 +4,7 @@ This project is an event-driven algorithmic trading system implemented using Kaf
 
 # Getting Started 
 
-### Prerequisites
+## Prerequisites
   * To start ZooKeeper, navigate to the Kafka directory and run the following command:
 
     ```
