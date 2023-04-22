@@ -29,6 +29,8 @@ This project is an event-driven algorithmic trading system implemented using Kaf
     "APE/USD": 1
   }
   ```
+  This file maps the btcusdt symbol to partition 0 and the apeusdt symbol to partition 1 under the binance-orderbook topic. Consumers can subscribe to the specific partitions they are interested in based on the symbol they want to trade.
+
   The symbols partition maps is an essential aspect of this project. It's like a JSON file inside the project directory that tells you which partition ID does a specific symbol takes in a particular topic. For example, in the binance-orderbook topic, we may have a lot of partitions based on symbols in the Binance exchange, so the partition map will tell you what symbol and its partition ID so that consumers can identify them easily.
 
   ### Step 3: Start Producers and Consumers
@@ -51,39 +53,20 @@ This project is an event-driven algorithmic trading system implemented using Kaf
     coinbase-orderbook
     bitmex-orderbook
     ```
-    
+
   2. Each topic may have multiple partitions based on the symbols interested in that exchange.
-
-
-
-
 
 
 
 ## Architecture Overview
 
-The system is built on top of the Kafka message broker, which provides a distributed, fault-tolerant, and scalable platform for handling high volumes of real-time data.
+### Producers
 
-Producers: Programs that receive raw exchange data via WebSockets, parse and normalize OB events, and publish those events to Kafka topics based on the symbol being traded. The system supports sharding by symbol using Kafka topic partitions, allowing for efficient storage and retrieval of OB data.
+  Producers (binance_producer.py,coinbase_producer.py etc) in thie project uses multiprocessing approach based on the number of cores available on the machine. Instead of creating a separate process for each symbol's WebSocket subscription, we create one process per core, with each process having a single big event loop where specific symbols' WebSocket tasks are run. This approach allows us to distribute the workload across multiple cores and take full advantage of the available hardware resources.
 
-To map symbols to their corresponding partitions, the system uses JSON configuration files. For example, the binance-config.json file might look like this:
-```
-{
-  "btcusdt": 0,
-  "apeusdt": 1
-}
-```
-This file maps the btcusdt symbol to partition 0 and the apeusdt symbol to partition 1 under the binance-orderbook topic. Consumers can subscribe to the specific partitions they are interested in based on the symbol they want to trade.
+  For best latency, it is recommended to run the producers(Distributed  exchange connectors) in AWS regions where the specific crypto exchange is located. This will minimize network latency and ensure timely delivery of real-time market data.
 
-Broker: The Kafka message broker that handles the distribution and storage of the OB events.
 
-Consumers :  Programs that listens to the Kafka topic (for example, binance-orderbook) and then listen to specific symbols by consuming data from the partitions defined in the partition maps of the JSON config file. The received data is used to create an order book in memory and generate signals for trading decisions.
-
-For best latency, it is recommended to run the producers(Distributed exchange connectors) in AWS regions where the specific crypto exchange is located. This will minimize network latency and ensure timely delivery of real-time market data.
-
-## Running the System
-
-Before running the producers and consumers, you need to start the Kafka broker and ZooKeeper on your local machine. In this case, both Kafka broker and ZooKeeper can be run on the localhost. However, if you choose to run the brokers on a different machine, you can provide the machine's IP address instead of localhost.
 
 
 
