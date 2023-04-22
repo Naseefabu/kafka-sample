@@ -39,15 +39,19 @@ This project is an event-driven algorithmic trading system implemented using Kaf
   ## Kafka Topic Format
 
   1. The orderbook topic format for each exchange is as follows:
+
     ```
     exchangename-orderbook
     ```
+
   For example :
+
     ```
     binance-orderbook
     coinbase-orderbook
     bitmex-orderbook
     ```
+    
   2. Each topic may have multiple partitions based on the symbols interested in that exchange.
 
 
