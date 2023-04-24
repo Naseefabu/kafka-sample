@@ -187,8 +187,7 @@ public:
 };
 
 int main(){
-    // std::cout << "hello world " << std::endl;
-    net::io_context ioc; // one giant event loop for all market data feeds scheduled on one core
+    net::io_context ioc; 
     ssl::context ctx{ssl::context::tlsv12_client};
 
     ctx.set_verify_mode(ssl::verify_peer);

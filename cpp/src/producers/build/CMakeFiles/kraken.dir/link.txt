@@ -1,0 +1,1 @@
+/usr/bin/c++  -O3 -pthread -DNDEBUG -lssl -lcrypto   CMakeFiles/kraken.dir/kraken_producer.cpp.o  -o kraken  -Wl,-rpath,/usr/local/lib -lssl -lcrypto /usr/local/lib/libcppkafka.so.0.4.0 -lpthread /usr/local/lib/librdkafka.so -lpthread -lrt -lssl -lcrypto -ldl -lz 

@@ -53,6 +53,7 @@ CMAKE_BINARY_DIR = /mnt/d/kafka-sample/cpp/src/producers/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
+all: CMakeFiles/kraken.dir/all
 all: CMakeFiles/coinbase.dir/all
 all: CMakeFiles/binance.dir/all
 all: _deps/json-build/all
@@ -65,6 +66,7 @@ preinstall: _deps/json-build/preinstall
 .PHONY : preinstall
 
 # The main recursive "clean" target.
+clean: CMakeFiles/kraken.dir/clean
 clean: CMakeFiles/coinbase.dir/clean
 clean: CMakeFiles/binance.dir/clean
 clean: _deps/json-build/clean
@@ -88,6 +90,33 @@ _deps/json-build/preinstall:
 _deps/json-build/clean:
 
 .PHONY : _deps/json-build/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/kraken.dir
+
+# All Build rule for target.
+CMakeFiles/kraken.dir/all:
+	$(MAKE) -f CMakeFiles/kraken.dir/build.make CMakeFiles/kraken.dir/depend
+	$(MAKE) -f CMakeFiles/kraken.dir/build.make CMakeFiles/kraken.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/d/kafka-sample/cpp/src/producers/build/CMakeFiles --progress-num=5,6 "Built target kraken"
+.PHONY : CMakeFiles/kraken.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/kraken.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/d/kafka-sample/cpp/src/producers/build/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/kraken.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/d/kafka-sample/cpp/src/producers/build/CMakeFiles 0
+.PHONY : CMakeFiles/kraken.dir/rule
+
+# Convenience name for target.
+kraken: CMakeFiles/kraken.dir/rule
+
+.PHONY : kraken
+
+# clean rule for target.
+CMakeFiles/kraken.dir/clean:
+	$(MAKE) -f CMakeFiles/kraken.dir/build.make CMakeFiles/kraken.dir/clean
+.PHONY : CMakeFiles/kraken.dir/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/coinbase.dir

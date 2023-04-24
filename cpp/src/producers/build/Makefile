@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named kraken
+
+# Build rule for target.
+kraken: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 kraken
+.PHONY : kraken
+
+# fast build rule for target.
+kraken/fast:
+	$(MAKE) -f CMakeFiles/kraken.dir/build.make CMakeFiles/kraken.dir/build
+.PHONY : kraken/fast
+
+#=============================================================================
 # Target rules for targets named coinbase
 
 # Build rule for target.
@@ -190,6 +203,33 @@ coinbase_producer.cpp.s:
 	$(MAKE) -f CMakeFiles/coinbase.dir/build.make CMakeFiles/coinbase.dir/coinbase_producer.cpp.s
 .PHONY : coinbase_producer.cpp.s
 
+kraken_producer.o: kraken_producer.cpp.o
+
+.PHONY : kraken_producer.o
+
+# target to build an object file
+kraken_producer.cpp.o:
+	$(MAKE) -f CMakeFiles/kraken.dir/build.make CMakeFiles/kraken.dir/kraken_producer.cpp.o
+.PHONY : kraken_producer.cpp.o
+
+kraken_producer.i: kraken_producer.cpp.i
+
+.PHONY : kraken_producer.i
+
+# target to preprocess a source file
+kraken_producer.cpp.i:
+	$(MAKE) -f CMakeFiles/kraken.dir/build.make CMakeFiles/kraken.dir/kraken_producer.cpp.i
+.PHONY : kraken_producer.cpp.i
+
+kraken_producer.s: kraken_producer.cpp.s
+
+.PHONY : kraken_producer.s
+
+# target to generate assembly for a file
+kraken_producer.cpp.s:
+	$(MAKE) -f CMakeFiles/kraken.dir/build.make CMakeFiles/kraken.dir/kraken_producer.cpp.s
+.PHONY : kraken_producer.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -197,6 +237,7 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... kraken"
 	@echo "... rebuild_cache"
 	@echo "... coinbase"
 	@echo "... binance"
@@ -206,6 +247,9 @@ help:
 	@echo "... coinbase_producer.o"
 	@echo "... coinbase_producer.i"
 	@echo "... coinbase_producer.s"
+	@echo "... kraken_producer.o"
+	@echo "... kraken_producer.i"
+	@echo "... kraken_producer.s"
 .PHONY : help
 
 

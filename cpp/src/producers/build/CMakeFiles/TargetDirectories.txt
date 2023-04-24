@@ -1,4 +1,5 @@
 /mnt/d/kafka-sample/cpp/src/producers/build/CMakeFiles/edit_cache.dir
+/mnt/d/kafka-sample/cpp/src/producers/build/CMakeFiles/kraken.dir
 /mnt/d/kafka-sample/cpp/src/producers/build/CMakeFiles/rebuild_cache.dir
 /mnt/d/kafka-sample/cpp/src/producers/build/CMakeFiles/coinbase.dir
 /mnt/d/kafka-sample/cpp/src/producers/build/CMakeFiles/binance.dir

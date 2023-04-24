@@ -50,10 +50,8 @@ class coinbaseWS : public std::enable_shared_from_this<coinbaseWS>
     char const* host = "ws-feed.exchange.coinbase.com";
     std::string wsTarget_ = "/ws/";
     std::string host_;
-    //SPSCQueue<OrderBookMessage> &diff_messages_queue;
     std::function<void()> message_handler;
-    //std::unordered_map<double,std::unordered_map<std::string,std::unordered_map<std::string,double>>> bids;
-    //std::unordered_map<double,std::unordered_map<std::string,std::unordered_map<std::string,double>>> asks;
+
 
   public:
 
@@ -177,8 +175,8 @@ class coinbaseWS : public std::enable_shared_from_this<coinbaseWS>
 };
 
 int main(){
-    // std::cout << "hello world " << std::endl;
-    net::io_context ioc; // one giant event loop for all market data feeds scheduled on one core
+
+    net::io_context ioc; 
     ssl::context ctx{ssl::context::tlsv12_client};
 
     ctx.set_verify_mode(ssl::verify_peer);

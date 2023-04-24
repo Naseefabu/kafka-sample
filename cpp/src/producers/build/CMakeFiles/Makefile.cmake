@@ -98,6 +98,7 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
+  "CMakeFiles/kraken.dir/DependInfo.cmake"
   "CMakeFiles/coinbase.dir/DependInfo.cmake"
   "CMakeFiles/binance.dir/DependInfo.cmake"
   )
