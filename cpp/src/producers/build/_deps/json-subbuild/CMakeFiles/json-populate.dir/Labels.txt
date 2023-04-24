@@ -1,0 +1,14 @@
+# Target labels
+ json-populate
+# Source files and their labels
+/mnt/d/kafka-sample/cpp/src/producers/build/_deps/json-subbuild/CMakeFiles/json-populate
+/mnt/d/kafka-sample/cpp/src/producers/build/_deps/json-subbuild/CMakeFiles/json-populate.rule
+/mnt/d/kafka-sample/cpp/src/producers/build/_deps/json-subbuild/CMakeFiles/json-populate-complete.rule
+/mnt/d/kafka-sample/cpp/src/producers/build/_deps/json-subbuild/json-populate-prefix/src/json-populate-stamp/json-populate-install.rule
+/mnt/d/kafka-sample/cpp/src/producers/build/_deps/json-subbuild/json-populate-prefix/src/json-populate-stamp/json-populate-mkdir.rule
+/mnt/d/kafka-sample/cpp/src/producers/build/_deps/json-subbuild/json-populate-prefix/src/json-populate-stamp/json-populate-download.rule
+/mnt/d/kafka-sample/cpp/src/producers/build/_deps/json-subbuild/json-populate-prefix/src/json-populate-stamp/json-populate-update.rule
+/mnt/d/kafka-sample/cpp/src/producers/build/_deps/json-subbuild/json-populate-prefix/src/json-populate-stamp/json-populate-patch.rule
+/mnt/d/kafka-sample/cpp/src/producers/build/_deps/json-subbuild/json-populate-prefix/src/json-populate-stamp/json-populate-configure.rule
+/mnt/d/kafka-sample/cpp/src/producers/build/_deps/json-subbuild/json-populate-prefix/src/json-populate-stamp/json-populate-build.rule
+/mnt/d/kafka-sample/cpp/src/producers/build/_deps/json-subbuild/json-populate-prefix/src/json-populate-stamp/json-populate-test.rule

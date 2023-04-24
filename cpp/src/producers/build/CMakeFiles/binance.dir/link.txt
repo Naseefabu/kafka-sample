@@ -1,0 +1,1 @@
+/usr/bin/c++  -O3 -pthread -DNDEBUG -lssl -lcrypto   CMakeFiles/binance.dir/binance_producer.cpp.o  -o binance  -lssl -lcrypto -lpthread 

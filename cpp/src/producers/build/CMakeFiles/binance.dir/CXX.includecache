@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/d/kafka-sample/cpp/src/producers/binance_producer.cpp
+iostream
+-
+boost/asio.hpp
+-
+boost/asio/ssl.hpp
+-
+boost/beast.hpp
+-
+boost/beast/ssl.hpp
+-
+
