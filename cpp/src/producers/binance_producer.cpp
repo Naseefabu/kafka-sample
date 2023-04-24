@@ -39,6 +39,26 @@ void fail_ws(beast::error_code ec, char const* what)
     std::cerr << what << ": " << ec.message() << "\n";
 }
 
+std::map<std::string, int> load_symbols_partition_map() {
+    // Open the JSON file
+    std::ifstream i("binance_config.json");
+    if (!i.is_open()) {
+        throw std::runtime_error("Failed to open binance_config.json");
+    }
+
+    // Parse the JSON
+    json j;
+    i >> j;
+
+    // Create a map of symbol to partition number
+    std::map<std::string, int> symbol_dict;
+    for (auto& [symbol, number] : j.items()) {
+        symbol_dict[symbol] = number;
+    }
+
+    return symbol_dict;
+}
+
 #define BINANCE_HANDLER(f) beast::bind_front_handler(&binanceWS::f, this->shared_from_this())
 
 
@@ -56,11 +76,17 @@ private:
     char const* host      = "stream.binance.com";
     char const* port      = "9443";
     std::function<void()> message_handler;
+    std::string symb;
+    Producer producer;
 
 public:
     binanceWS(net::any_io_executor ex, ssl::context& ctx)
         : resolver_(ex)
-        , ws_(ex, ctx) {}
+        , ws_(ex, ctx)
+        , producer({
+              { "metadata.broker.list", "localhost:9092" }
+          })
+         {}
 
     void run(char const* host, char const* port, json message, const std::string& streamName) {
         if (!SSL_set_tlsext_host_name(ws_.next_layer().native_handle(), host)) {
@@ -165,13 +191,18 @@ public:
     
     void subscribe_orderbook(const std::string action,const std::string symbol, int levels)
     {
+        symb = symbol;
         std::string stream = symbol+"@"+"depth"+std::to_string(levels);
         message_handler = [this]() {
 
             json payload = json::parse(beast::buffers_to_string(buffer_.cdata()));
-            bool is;
             
-            std::cout << "Binance Orderbook Response : " << payload << std::endl;
+            // std::cout << "Binance Orderbook Response : " << payload << std::endl;
+            std::map<std::string, int> partition_map = load_symbols_partition_map();
+            int partition_id = partition_map[symb];
+            std::string payload_str = payload.dump();
+            producer.produce(MessageBuilder("kraken-orderbook").partition(partition_id).payload(payload_str));
+            producer.flush();
 
         };
         json jv = {
@@ -186,25 +217,6 @@ public:
 
 };
 
-std::map<std::string, int> load_symbols_partition_map() {
-    // Open the JSON file
-    std::ifstream i("binance_config.json");
-    if (!i.is_open()) {
-        throw std::runtime_error("Failed to open binance_config.json");
-    }
-
-    // Parse the JSON
-    json j;
-    i >> j;
-
-    // Create a map of symbol to partition number
-    std::map<std::string, int> symbol_dict;
-    for (auto& [symbol, number] : j.items()) {
-        symbol_dict[symbol] = number;
-    }
-
-    return symbol_dict;
-}
 
 int main(){
     net::io_context ioc; 

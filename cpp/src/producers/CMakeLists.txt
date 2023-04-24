@@ -18,7 +18,7 @@ find_package(CppKafka REQUIRED)
 
 set(URLIB_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/externel/url/include")
 set(URLIB_HEADERS ${URLIB_DIRECTORY}/boost/url.hpp ${URLIB_DIRECTORY}/boost/url/src.hpp)
-configure_file(binance_config.json ${CMAKE_BINARY_DIR} COPYONLY)
+configure_file(binance_config.json ${CMAKE_BINARY_DIR} COPYONLY) # copy the json file to the location of executables
 configure_file(coinbase_config.json ${CMAKE_BINARY_DIR} COPYONLY)
 configure_file(kraken_config.json ${CMAKE_BINARY_DIR} COPYONLY)
 

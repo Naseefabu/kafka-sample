@@ -5,6 +5,7 @@
 #include <boost/beast/ssl.hpp>
 #include <cppkafka/cppkafka.h>
 
+
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -37,6 +38,26 @@ void fail_ws(beast::error_code ec, char const* what)
     std::cerr << what << ": " << ec.message() << "\n";
 }
 
+std::map<std::string, int> load_symbols_partition_map() {
+    // Open the JSON file
+    std::ifstream i("kraken_config.json");
+    if (!i.is_open()) {
+        throw std::runtime_error("Failed to open binance_config.json");
+    }
+
+    // Parse the JSON
+    json j;
+    i >> j;
+
+    // Create a map of symbol to partition number
+    std::map<std::string, int> symbol_dict;
+    for (auto& [symbol, number] : j.items()) {
+        symbol_dict[symbol] = number;
+    }
+
+    return symbol_dict;
+}
+
 #define KRAKEN_HANDLER(z) beast::bind_front_handler(&krakenWS::z, this->shared_from_this())
 
 
@@ -49,14 +70,19 @@ class krakenWS : public std::enable_shared_from_this<krakenWS>
     char const* host = "ws.kraken.com";
     std::string wsTarget_ = "/ws/";
     std::string host_;
-    //SPSCQueue<OrderBookMessage> &diff_messages_queue;
+    std::string symb;
     std::function<void()> message_handler;
+    Producer producer;
+
 
   public:
 
     krakenWS(net::any_io_executor ex, ssl::context& ctx)
         : resolver_(ex)
         , ws_(ex, ctx)
+        , producer({
+              { "metadata.broker.list", "localhost:9092" }
+          })
         {}
 
     void run(json message) {
@@ -156,14 +182,20 @@ class krakenWS : public std::enable_shared_from_this<krakenWS>
     // valid levels options : 10,25,100,500,1000
     void subscribe_orderbook(const std::string& pair, int levels)
     {
-
+        symb = pair;
         json payload = {{"event", "subscribe"},
                     {"pair", {pair}}};
 
         message_handler = [this](){
 
             json payload = json::parse(beast::buffers_to_string(buffer_.cdata()));
-            std::cout << "Kraken Orderbook snapshot : " << payload <<std::endl;
+            // std::cout << "Kraken Orderbook snapshot : " << payload <<std::endl;
+            std::map<std::string, int> partition_map = load_symbols_partition_map();
+            int partition_id = partition_map[symb];
+            std::string payload_str = payload.dump();
+            producer.produce(MessageBuilder("kraken-orderbook").partition(partition_id).payload(payload_str));
+            producer.flush();
+
         };
 
         payload["subscription"]["name"] = "book";
@@ -173,26 +205,6 @@ class krakenWS : public std::enable_shared_from_this<krakenWS>
 
 };
 
-std::map<std::string, int> load_symbols_partition_map() {
-    // Open the JSON file
-    std::ifstream i("kraken_config.json");
-    if (!i.is_open()) {
-        throw std::runtime_error("Failed to open binance_config.json");
-    }
-
-    // Parse the JSON
-    json j;
-    i >> j;
-
-    // Create a map of symbol to partition number
-    std::map<std::string, int> symbol_dict;
-    for (auto& [symbol, number] : j.items()) {
-        symbol_dict[symbol] = number;
-    }
-
-    return symbol_dict;
-}
-
 
 int main(){
     net::io_context ioc;
@@ -201,17 +213,9 @@ int main(){
     ctx.set_verify_mode(ssl::verify_peer);
     ctx.set_default_verify_paths();
 
-    // Create the config
-    Configuration config = {
-        { "metadata.broker.list", "localhost:9092" }
-    };
-
-    // Create the producer
-    Producer producer(config);
-
     // Produce a message!
     // std::string message = "hey there coinbase!";
-    // producer.produce(MessageBuilder("coinbase-orderbook").partition(0).payload(message));
+    
     // producer.flush();
 
     

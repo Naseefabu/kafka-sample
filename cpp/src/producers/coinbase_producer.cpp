@@ -36,6 +36,27 @@ void fail_ws(beast::error_code ec, char const* what)
     std::cerr << what << ": " << ec.message() << "\n";
 }
 
+
+std::map<std::string, int> load_symbols_partition_map() {
+    // Open the JSON file
+    std::ifstream i("coinbase_config.json");
+    if (!i.is_open()) {
+        throw std::runtime_error("Failed to open binance_config.json");
+    }
+
+    // Parse the JSON
+    json j;
+    i >> j;
+
+    // Create a map of symbol to partition number
+    std::map<std::string, int> symbol_dict;
+    for (auto& [symbol, number] : j.items()) {
+        symbol_dict[symbol] = number;
+    }
+
+    return symbol_dict;
+}
+
 #define COINBASE_HANDLER(c) beast::bind_front_handler(&coinbaseWS::c, this->shared_from_this())
 
 
@@ -48,9 +69,11 @@ class coinbaseWS : public std::enable_shared_from_this<coinbaseWS>
     beast::flat_buffer buffer_;
     std::string message_text_;
     char const* host = "ws-feed.exchange.coinbase.com";
+    std::string symb;
     std::string wsTarget_ = "/ws/";
     std::string host_;
     std::function<void()> message_handler;
+    Producer producer;
 
 
   public:
@@ -58,6 +81,9 @@ class coinbaseWS : public std::enable_shared_from_this<coinbaseWS>
     coinbaseWS(net::any_io_executor ex, ssl::context& ctx)
         : resolver_(ex)
         , ws_(ex, ctx)
+        , producer({
+              { "metadata.broker.list", "localhost:9092" }
+          })
         {}
 
     void run(json message) {
@@ -155,6 +181,7 @@ class coinbaseWS : public std::enable_shared_from_this<coinbaseWS>
   
   void subscribe_orderbook(const std::string& market)
   {
+    symb = market;
 
     json payload = {{"type", "subscribe"},
                 {"product_ids", {market}},
@@ -164,7 +191,12 @@ class coinbaseWS : public std::enable_shared_from_this<coinbaseWS>
 
         json payload = json::parse(beast::buffers_to_string(buffer_.cdata()));
         
-        std::cout << "Coinbase Orderbook Response : " << payload << std::endl;
+        // std::cout << "Coinbase Orderbook Response : " << payload << std::endl;
+        std::map<std::string, int> partition_map = load_symbols_partition_map();
+        int partition_id = partition_map[symb];
+        std::string payload_str = payload.dump();
+        producer.produce(MessageBuilder("kraken-orderbook").partition(partition_id).payload(payload_str));
+        producer.flush();
 
     };
 
@@ -174,25 +206,6 @@ class coinbaseWS : public std::enable_shared_from_this<coinbaseWS>
 
 };
 
-std::map<std::string, int> load_symbols_partition_map() {
-    // Open the JSON file
-    std::ifstream i("coinbase_config.json");
-    if (!i.is_open()) {
-        throw std::runtime_error("Failed to open binance_config.json");
-    }
-
-    // Parse the JSON
-    json j;
-    i >> j;
-
-    // Create a map of symbol to partition number
-    std::map<std::string, int> symbol_dict;
-    for (auto& [symbol, number] : j.items()) {
-        symbol_dict[symbol] = number;
-    }
-
-    return symbol_dict;
-}
 
 int main(){
 
