@@ -186,6 +186,26 @@ public:
 
 };
 
+std::map<std::string, int> load_symbols_partition_map() {
+    // Open the JSON file
+    std::ifstream i("binance_config.json");
+    if (!i.is_open()) {
+        throw std::runtime_error("Failed to open binance_config.json");
+    }
+
+    // Parse the JSON
+    json j;
+    i >> j;
+
+    // Create a map of symbol to partition number
+    std::map<std::string, int> symbol_dict;
+    for (auto& [symbol, number] : j.items()) {
+        symbol_dict[symbol] = number;
+    }
+
+    return symbol_dict;
+}
+
 int main(){
     net::io_context ioc; 
     ssl::context ctx{ssl::context::tlsv12_client};
@@ -197,6 +217,10 @@ int main(){
     Configuration config = {
         { "metadata.broker.list", "localhost:9092" }
     };
+
+    std::map<std::string, int> dict = load_symbols_partition_map();
+    std::cout << dict["BTC/USD"] << std::endl;
+
 
     // Create the producer
     Producer producer(config);

@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
   "../CMakeLists.txt"
+  "../binance_config.json"
   "CMakeFiles/3.16.3/CMakeCCompiler.cmake"
   "CMakeFiles/3.16.3/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.16.3/CMakeSystem.cmake"
@@ -16,6 +17,8 @@ set(CMAKE_MAKEFILE_DEPENDS
   "_deps/json-src/cmake/nlohmann_jsonConfigVersion.cmake.in"
   "_deps/json-src/cmake/pkg-config.pc.in"
   "rdkafka_version_test.cpp"
+  "../coinbase_config.json"
+  "../kraken_config.json"
   "/usr/lib/cmake/Boost-1.79.0/BoostConfig.cmake"
   "/usr/lib/cmake/Boost-1.79.0/BoostConfigVersion.cmake"
   "/usr/lib/cmake/BoostDetectToolset-1.79.0.cmake"
@@ -92,6 +95,9 @@ set(CMAKE_MAKEFILE_OUTPUTS
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
   "_deps/json-subbuild/CMakeLists.txt"
+  "binance_config.json"
+  "coinbase_config.json"
+  "kraken_config.json"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   "_deps/json-build/CMakeFiles/CMakeDirectoryInformation.cmake"
   )

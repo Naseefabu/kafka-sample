@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 project(producers)
 
 #set(CMAKE_CXX_COMPILER /usr/bin/clang++)
+set(CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_FLAGS "-O3 -pthread -DNDEBUG -lssl -lcrypto")
 
 
@@ -17,6 +18,9 @@ find_package(CppKafka REQUIRED)
 
 set(URLIB_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/externel/url/include")
 set(URLIB_HEADERS ${URLIB_DIRECTORY}/boost/url.hpp ${URLIB_DIRECTORY}/boost/url/src.hpp)
+configure_file(binance_config.json ${CMAKE_BINARY_DIR} COPYONLY)
+configure_file(coinbase_config.json ${CMAKE_BINARY_DIR} COPYONLY)
+configure_file(kraken_config.json ${CMAKE_BINARY_DIR} COPYONLY)
 
 add_executable(binance binance_producer.cpp)
 target_include_directories(binance SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
