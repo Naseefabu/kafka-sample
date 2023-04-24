@@ -1,5 +1,6 @@
-/mnt/d/kafka-sample/cpp/src/producers/build/CMakeFiles/rebuild_cache.dir
 /mnt/d/kafka-sample/cpp/src/producers/build/CMakeFiles/edit_cache.dir
+/mnt/d/kafka-sample/cpp/src/producers/build/CMakeFiles/rebuild_cache.dir
+/mnt/d/kafka-sample/cpp/src/producers/build/CMakeFiles/coinbase.dir
 /mnt/d/kafka-sample/cpp/src/producers/build/CMakeFiles/binance.dir
 /mnt/d/kafka-sample/cpp/src/producers/build/_deps/json-build/CMakeFiles/edit_cache.dir
 /mnt/d/kafka-sample/cpp/src/producers/build/_deps/json-build/CMakeFiles/rebuild_cache.dir

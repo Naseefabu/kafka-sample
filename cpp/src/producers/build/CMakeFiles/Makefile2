@@ -53,6 +53,7 @@ CMAKE_BINARY_DIR = /mnt/d/kafka-sample/cpp/src/producers/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
+all: CMakeFiles/coinbase.dir/all
 all: CMakeFiles/binance.dir/all
 all: _deps/json-build/all
 
@@ -64,6 +65,7 @@ preinstall: _deps/json-build/preinstall
 .PHONY : preinstall
 
 # The main recursive "clean" target.
+clean: CMakeFiles/coinbase.dir/clean
 clean: CMakeFiles/binance.dir/clean
 clean: _deps/json-build/clean
 
@@ -86,6 +88,33 @@ _deps/json-build/preinstall:
 _deps/json-build/clean:
 
 .PHONY : _deps/json-build/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/coinbase.dir
+
+# All Build rule for target.
+CMakeFiles/coinbase.dir/all:
+	$(MAKE) -f CMakeFiles/coinbase.dir/build.make CMakeFiles/coinbase.dir/depend
+	$(MAKE) -f CMakeFiles/coinbase.dir/build.make CMakeFiles/coinbase.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/d/kafka-sample/cpp/src/producers/build/CMakeFiles --progress-num=3,4 "Built target coinbase"
+.PHONY : CMakeFiles/coinbase.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/coinbase.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/d/kafka-sample/cpp/src/producers/build/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/coinbase.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/d/kafka-sample/cpp/src/producers/build/CMakeFiles 0
+.PHONY : CMakeFiles/coinbase.dir/rule
+
+# Convenience name for target.
+coinbase: CMakeFiles/coinbase.dir/rule
+
+.PHONY : coinbase
+
+# clean rule for target.
+CMakeFiles/coinbase.dir/clean:
+	$(MAKE) -f CMakeFiles/coinbase.dir/build.make CMakeFiles/coinbase.dir/clean
+.PHONY : CMakeFiles/coinbase.dir/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/binance.dir

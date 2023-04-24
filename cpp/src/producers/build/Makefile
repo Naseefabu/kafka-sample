@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = /mnt/d/kafka-sample/cpp/src/producers/build
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
@@ -77,6 +66,17 @@ edit_cache:
 edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
+
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/usr/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -109,6 +109,19 @@ preinstall/fast:
 depend:
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
+
+#=============================================================================
+# Target rules for targets named coinbase
+
+# Build rule for target.
+coinbase: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 coinbase
+.PHONY : coinbase
+
+# fast build rule for target.
+coinbase/fast:
+	$(MAKE) -f CMakeFiles/coinbase.dir/build.make CMakeFiles/coinbase.dir/build
+.PHONY : coinbase/fast
 
 #=============================================================================
 # Target rules for targets named binance
@@ -150,18 +163,49 @@ binance_producer.cpp.s:
 	$(MAKE) -f CMakeFiles/binance.dir/build.make CMakeFiles/binance.dir/binance_producer.cpp.s
 .PHONY : binance_producer.cpp.s
 
+coinbase_producer.o: coinbase_producer.cpp.o
+
+.PHONY : coinbase_producer.o
+
+# target to build an object file
+coinbase_producer.cpp.o:
+	$(MAKE) -f CMakeFiles/coinbase.dir/build.make CMakeFiles/coinbase.dir/coinbase_producer.cpp.o
+.PHONY : coinbase_producer.cpp.o
+
+coinbase_producer.i: coinbase_producer.cpp.i
+
+.PHONY : coinbase_producer.i
+
+# target to preprocess a source file
+coinbase_producer.cpp.i:
+	$(MAKE) -f CMakeFiles/coinbase.dir/build.make CMakeFiles/coinbase.dir/coinbase_producer.cpp.i
+.PHONY : coinbase_producer.cpp.i
+
+coinbase_producer.s: coinbase_producer.cpp.s
+
+.PHONY : coinbase_producer.s
+
+# target to generate assembly for a file
+coinbase_producer.cpp.s:
+	$(MAKE) -f CMakeFiles/coinbase.dir/build.make CMakeFiles/coinbase.dir/coinbase_producer.cpp.s
+.PHONY : coinbase_producer.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... rebuild_cache"
+	@echo "... coinbase"
 	@echo "... binance"
 	@echo "... binance_producer.o"
 	@echo "... binance_producer.i"
 	@echo "... binance_producer.s"
+	@echo "... coinbase_producer.o"
+	@echo "... coinbase_producer.i"
+	@echo "... coinbase_producer.s"
 .PHONY : help
 
 
