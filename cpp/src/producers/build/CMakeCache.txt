@@ -286,6 +286,9 @@ CMAKE_STRIP:FILEPATH=/usr/bin/strip
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
+//The directory containing a CMake configuration file for CppKafka.
+CppKafka_DIR:PATH=/usr/local/lib/cmake/CppKafka
+
 //Directory under which to collect all populated content
 FETCHCONTENT_BASE_DIR:PATH=/mnt/d/kafka-sample/cpp/src/producers/build/_deps
 
@@ -338,6 +341,15 @@ OPENSSL_SSL_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libssl.so
 
 //pkg-config executable
 PKG_CONFIG_EXECUTABLE:FILEPATH=PKG_CONFIG_EXECUTABLE-NOTFOUND
+
+//The directory containing a CMake configuration file for RdKafka.
+RdKafka_DIR:PATH=RdKafka_DIR-NOTFOUND
+
+//Path to a file.
+RdKafka_INCLUDE_DIR:PATH=/usr/local/include
+
+//Path to a library.
+RdKafka_LIBRARY_PATH:FILEPATH=/usr/local/lib/librdkafka.so
 
 //The directory containing a CMake configuration file for boost_atomic.
 boost_atomic_DIR:PATH=/usr/lib/cmake/boost_atomic-1.79.0
@@ -560,9 +572,11 @@ CMAKE_UNAME:INTERNAL=/usr/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //Details about finding Boost
-FIND_PACKAGE_MESSAGE_DETAILS_Boost:INTERNAL=[/usr/lib/cmake/Boost-1.79.0/BoostConfig.cmake][cfound components: system thread filesystem container ][v1.79.0(1.79.0)]
+FIND_PACKAGE_MESSAGE_DETAILS_Boost:INTERNAL=[/usr/lib/cmake/Boost-1.79.0/BoostConfig.cmake][c ][v1.79.0()]
 //Details about finding OpenSSL
 FIND_PACKAGE_MESSAGE_DETAILS_OpenSSL:INTERNAL=[/usr/lib/x86_64-linux-gnu/libcrypto.so][/usr/include][c ][v1.1.1f()]
+//Details about finding RdKafka
+FIND_PACKAGE_MESSAGE_DETAILS_RdKafka:INTERNAL=[librdkafka.so][/usr/local/lib/librdkafka.so][/usr/local/include][v()]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 NLOHMANN_JSON_CONFIG_INSTALL_DIR:INTERNAL=lib/cmake/nlohmann_json
@@ -574,6 +588,12 @@ OPENSSL_INCLUDE_DIR-ADVANCED:INTERNAL=1
 OPENSSL_SSL_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: PKG_CONFIG_EXECUTABLE
 PKG_CONFIG_EXECUTABLE-ADVANCED:INTERNAL=1
+//Result of TRY_COMPILE
+RdKafka_FOUND:INTERNAL=TRUE
+//ADVANCED property for variable: RdKafka_INCLUDE_DIR
+RdKafka_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: RdKafka_LIBRARY_PATH
+RdKafka_LIBRARY_PATH-ADVANCED:INTERNAL=1
 //CMAKE_INSTALL_PREFIX during last run
 _GNUInstallDirs_LAST_CMAKE_INSTALL_PREFIX:INTERNAL=/usr/local
 _OPENSSL_CFLAGS:INTERNAL=

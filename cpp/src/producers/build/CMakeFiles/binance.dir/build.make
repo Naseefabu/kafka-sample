@@ -79,6 +79,8 @@ binance_EXTERNAL_OBJECTS =
 
 binance: CMakeFiles/binance.dir/binance_producer.cpp.o
 binance: CMakeFiles/binance.dir/build.make
+binance: /usr/local/lib/libcppkafka.so.0.4.0
+binance: /usr/local/lib/librdkafka.so
 binance: CMakeFiles/binance.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/d/kafka-sample/cpp/src/producers/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable binance"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/binance.dir/link.txt --verbose=$(VERBOSE)

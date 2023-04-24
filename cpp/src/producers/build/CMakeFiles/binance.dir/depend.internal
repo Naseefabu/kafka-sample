@@ -3,3 +3,4 @@
 
 CMakeFiles/binance.dir/binance_producer.cpp.o
  /mnt/d/kafka-sample/cpp/src/producers/binance_producer.cpp
+ _deps/json-src/single_include/nlohmann/json.hpp
