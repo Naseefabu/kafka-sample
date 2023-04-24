@@ -9,6 +9,7 @@
 
 #include <fstream>
 #include <iomanip>
+#include <string>
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <sys/types.h>
@@ -31,6 +32,7 @@ using SSLStream = beast::ssl_stream<TCPStream>;
 using Stream    = websocket::stream<SSLStream>;
 
 using namespace std::chrono_literals;
+using namespace cppkafka;
 
 void fail_ws(beast::error_code ec, char const* what)
 {
@@ -191,11 +193,23 @@ int main(){
 
     ctx.set_verify_mode(ssl::verify_peer);
     ctx.set_default_verify_paths();
-    
-    auto binancews = std::make_shared<binanceWS>(ioc.get_executor(),ctx);
-    //binancews->subscribe_levelone("SUBSCRIBE","btcusdt");    
-    //binancews->subscribe_orderbook_diffs("SUBSCRIBE","btcusdt",10);    
-    binancews->subscribe_orderbook("SUBSCRIBE","btcusdt",5);  
 
-    ioc.run();
+    // Create the config
+    Configuration config = {
+        { "metadata.broker.list", "localhost:9092" }
+    };
+
+    // Create the producer
+    Producer producer(config);
+
+    // Produce a message!
+    std::string message = "hey there!";
+    producer.produce(MessageBuilder("binance-orderbook").partition(0).payload(message));
+    producer.flush();
+
+    
+    // auto binancews = std::make_shared<binanceWS>(ioc.get_executor(),ctx); 
+    // binancews->subscribe_orderbook("SUBSCRIBE","btcusdt",5);  
+
+    // ioc.run();
 }

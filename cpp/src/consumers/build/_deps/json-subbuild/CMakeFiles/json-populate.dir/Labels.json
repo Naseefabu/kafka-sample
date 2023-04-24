@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/mnt/d/kafka-sample/cpp/src/consumers/build/_deps/json-subbuild/CMakeFiles/json-populate"
+		},
+		{
+			"file" : "/mnt/d/kafka-sample/cpp/src/consumers/build/_deps/json-subbuild/CMakeFiles/json-populate.rule"
+		},
+		{
+			"file" : "/mnt/d/kafka-sample/cpp/src/consumers/build/_deps/json-subbuild/CMakeFiles/json-populate-complete.rule"
+		},
+		{
+			"file" : "/mnt/d/kafka-sample/cpp/src/consumers/build/_deps/json-subbuild/json-populate-prefix/src/json-populate-stamp/json-populate-install.rule"
+		},
+		{
+			"file" : "/mnt/d/kafka-sample/cpp/src/consumers/build/_deps/json-subbuild/json-populate-prefix/src/json-populate-stamp/json-populate-mkdir.rule"
+		},
+		{
+			"file" : "/mnt/d/kafka-sample/cpp/src/consumers/build/_deps/json-subbuild/json-populate-prefix/src/json-populate-stamp/json-populate-download.rule"
+		},
+		{
+			"file" : "/mnt/d/kafka-sample/cpp/src/consumers/build/_deps/json-subbuild/json-populate-prefix/src/json-populate-stamp/json-populate-update.rule"
+		},
+		{
+			"file" : "/mnt/d/kafka-sample/cpp/src/consumers/build/_deps/json-subbuild/json-populate-prefix/src/json-populate-stamp/json-populate-patch.rule"
+		},
+		{
+			"file" : "/mnt/d/kafka-sample/cpp/src/consumers/build/_deps/json-subbuild/json-populate-prefix/src/json-populate-stamp/json-populate-configure.rule"
+		},
+		{
+			"file" : "/mnt/d/kafka-sample/cpp/src/consumers/build/_deps/json-subbuild/json-populate-prefix/src/json-populate-stamp/json-populate-build.rule"
+		},
+		{
+			"file" : "/mnt/d/kafka-sample/cpp/src/consumers/build/_deps/json-subbuild/json-populate-prefix/src/json-populate-stamp/json-populate-test.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"json-populate"
+		],
+		"name" : "json-populate"
+	}
+}

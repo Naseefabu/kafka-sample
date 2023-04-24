@@ -1,0 +1,1 @@
+/usr/bin/c++  -O3 -pthread -DNDEBUG -lssl -lcrypto   CMakeFiles/mm.dir/market_making.cpp.o  -o mm  -Wl,-rpath,/usr/local/lib -lssl -lcrypto /usr/local/lib/libcppkafka.so.0.4.0 /usr/local/lib/librdkafka.so -lpthread -lrt -lssl -lcrypto -ldl -lz 
