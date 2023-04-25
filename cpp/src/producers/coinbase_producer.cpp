@@ -198,7 +198,7 @@ class coinbaseWS : public std::enable_shared_from_this<coinbaseWS>
         std::map<std::string, int> partition_map = load_symbols_partition_map();
         int partition_id = partition_map[symb];
         std::string payload_str = payload.dump();
-        producer.produce(MessageBuilder("kraken-orderbook").partition(partition_id).payload(payload_str));
+        producer.produce(MessageBuilder("coinbase-orderbook").partition(partition_id).payload(payload_str));
         producer.flush();
 
     };
