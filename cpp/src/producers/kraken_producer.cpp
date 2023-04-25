@@ -189,7 +189,7 @@ class krakenWS : public std::enable_shared_from_this<krakenWS>
         message_handler = [this](){
 
             json payload = json::parse(beast::buffers_to_string(buffer_.cdata()));
-            // std::cout << "Kraken Orderbook snapshot : " << payload <<std::endl;
+            std::cout << "Kraken Orderbook snapshot : " << payload <<std::endl;
             std::map<std::string, int> partition_map = load_symbols_partition_map();
             int partition_id = partition_map[symb];
             std::string payload_str = payload.dump();
@@ -205,23 +205,84 @@ class krakenWS : public std::enable_shared_from_this<krakenWS>
 
 };
 
-
-int main(){
-    net::io_context ioc;
+void run_event_loop(const std::vector<std::string>& symbols, net::io_context& ioc)
+{
     ssl::context ctx{ssl::context::tlsv12_client};
-
     ctx.set_verify_mode(ssl::verify_peer);
     ctx.set_default_verify_paths();
 
-    // Produce a message!
-    // std::string message = "hey there coinbase!";
+    for (const auto& symbol : symbols) {
+        std::cout << symbol << std::endl;
+        auto krakenws = std::make_shared<krakenWS>(ioc.get_executor(), ctx);  
+        krakenws->subscribe_orderbook(symbol, 10);
+    }
     
-    // producer.flush();
-
-    
-    auto krakenws = std::make_shared<krakenWS>(ioc.get_executor(),ctx); 
-    std::string market = "AUD/USD";
-    krakenws->subscribe_orderbook(market,10);  
-
-    ioc.run();
+    ioc.run(); // this will block until all asynchronous operations have completed
 }
+
+void run_threads_in_cores(){
+    const std::size_t num_cores = std::thread::hardware_concurrency(); 
+
+    std::vector<std::string> symbols;
+    std::map<std::string, int> partition_map = load_symbols_partition_map();
+    
+    for (const auto& pair : partition_map) {
+        symbols.push_back(pair.first);
+    }
+    
+    std::vector<std::thread> threads;
+    // partition symbols into groups based on the number of available cores
+    std::vector<std::vector<std::string>> symbol_groups(num_cores);
+
+    std::size_t i = 0;
+    for (const auto& symbol : symbols) {
+        symbol_groups[i++ % num_cores].push_back(symbol);
+    }
+
+    for (const auto& symbol_group : symbol_groups) {
+        if(symbol_group.empty()){ // if symbols is less than number of cores you dont need to start the thread
+            continue;
+        }
+        net::io_context ioc;
+        threads.emplace_back([&symbol_group, &ioc]() { run_event_loop(symbol_group, ioc); });
+    }
+
+    std::for_each(threads.begin(), threads.end(), [](std::thread& t) { t.join(); });
+}
+
+int main(){
+    net::io_context ioc1;
+    ssl::context ctx1{ssl::context::tlsv12_client};
+
+    ctx1.set_verify_mode(ssl::verify_peer);
+    ctx1.set_default_verify_paths();
+
+    net::io_context ioc2;
+
+
+    std::string market = "AUD/USD";
+    auto krakenws = std::make_shared<krakenWS>(ioc1.get_executor(), ctx1);  
+    krakenws->subscribe_orderbook(market, 10);
+
+    std::string market1 = "AUD/JPY";
+    auto krakenws1 = std::make_shared<krakenWS>(ioc2.get_executor(), ctx1);  
+    krakenws1->subscribe_orderbook(market1, 10);
+
+
+    // Create a thread to run ioc1
+    std::thread t1([&ioc1]() {
+        ioc1.run();
+    });
+
+    // Create a thread to run ioc2
+    std::thread t2([&ioc2]() {
+        ioc2.run();
+    });
+
+    t1.join();
+    t2.join();
+
+
+}
+
+// http://coliru.stacked-crooked.com/a/51f248c085656de7 first

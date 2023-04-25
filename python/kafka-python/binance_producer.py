@@ -8,6 +8,8 @@ from kafka import KafkaProducer
 from kafka.admin import KafkaAdminClient, NewTopic
 
 
+
+
 def json_serializer(data):
     return json.dumps(data).encode("utf-8")
 
