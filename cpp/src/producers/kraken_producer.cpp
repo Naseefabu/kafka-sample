@@ -4,6 +4,8 @@
 #include <boost/beast.hpp>
 #include <boost/beast/ssl.hpp>
 #include <cppkafka/cppkafka.h>
+#include <pthread.h>
+#include <sched.h>
 
 
 #include <fstream>
@@ -205,23 +207,37 @@ class krakenWS : public std::enable_shared_from_this<krakenWS>
 
 };
 
-void run_event_loop(const std::vector<std::string>& symbols, net::io_context& ioc)
+void run_event_loop(const std::vector<std::string>& symbols, net::io_context& ioc, ssl::context& ctx)
 {
-    ssl::context ctx{ssl::context::tlsv12_client};
-    ctx.set_verify_mode(ssl::verify_peer);
-    ctx.set_default_verify_paths();
-
+    std::vector<std::shared_ptr<krakenWS>> ws_objects; // to make scope outside of for loop 
     for (const auto& symbol : symbols) {
         std::cout << symbol << std::endl;
         auto krakenws = std::make_shared<krakenWS>(ioc.get_executor(), ctx);  
+        ws_objects.push_back(krakenws);
         krakenws->subscribe_orderbook(symbol, 10);
     }
-    
+
     ioc.run(); // this will block until all asynchronous operations have completed
 }
 
-void run_threads_in_cores(){
-    const std::size_t num_cores = std::thread::hardware_concurrency(); 
+void set_core_affinity(unsigned int core_id)
+{
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(core_id, &cpuset);
+
+    pthread_t current_thread = pthread_self();
+    pthread_setaffinity_np(current_thread, sizeof(cpu_set_t), &cpuset);
+}
+
+int main(){
+    net::io_context ioc1; // shared between threads
+    ssl::context ctx1{ssl::context::tlsv12_client};
+
+    ctx1.set_verify_mode(ssl::verify_peer);
+    ctx1.set_default_verify_paths();
+
+   const std::size_t num_cores = std::thread::hardware_concurrency(); 
 
     std::vector<std::string> symbols;
     std::map<std::string, int> partition_map = load_symbols_partition_map();
@@ -239,50 +255,17 @@ void run_threads_in_cores(){
         symbol_groups[i++ % num_cores].push_back(symbol);
     }
 
-    for (const auto& symbol_group : symbol_groups) {
+    for (unsigned int coreid = 0; coreid < symbol_groups.size(); coreid++) {
+        const auto& symbol_group = symbol_groups[coreid];
         if(symbol_group.empty()){ // if symbols is less than number of cores you dont need to start the thread
             continue;
         }
-        net::io_context ioc;
-        threads.emplace_back([&symbol_group, &ioc]() { run_event_loop(symbol_group, ioc); });
+        threads.emplace_back([&symbol_group, &ioc1, &ctx1, coreid]() {
+             set_core_affinity(coreid);
+             run_event_loop(symbol_group, ioc1,ctx1);
+         });
     }
 
     std::for_each(threads.begin(), threads.end(), [](std::thread& t) { t.join(); });
-}
-
-int main(){
-    net::io_context ioc1;
-    ssl::context ctx1{ssl::context::tlsv12_client};
-
-    ctx1.set_verify_mode(ssl::verify_peer);
-    ctx1.set_default_verify_paths();
-
-    net::io_context ioc2;
-
-
-    std::string market = "AUD/USD";
-    auto krakenws = std::make_shared<krakenWS>(ioc1.get_executor(), ctx1);  
-    krakenws->subscribe_orderbook(market, 10);
-
-    std::string market1 = "AUD/JPY";
-    auto krakenws1 = std::make_shared<krakenWS>(ioc2.get_executor(), ctx1);  
-    krakenws1->subscribe_orderbook(market1, 10);
-
-
-    // Create a thread to run ioc1
-    std::thread t1([&ioc1]() {
-        ioc1.run();
-    });
-
-    // Create a thread to run ioc2
-    std::thread t2([&ioc2]() {
-        ioc2.run();
-    });
-
-    t1.join();
-    t2.join();
-
 
 }
-
-// http://coliru.stacked-crooked.com/a/51f248c085656de7 first

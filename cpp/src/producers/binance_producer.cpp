@@ -16,6 +16,8 @@
 #include <unistd.h>
 #include <system_error>
 #include <cppkafka/cppkafka.h>
+#include <pthread.h>
+#include <sched.h>
 
 namespace beast     = boost::beast;    
 namespace http      = beast::http;     
@@ -189,7 +191,7 @@ public:
         std::cout << beast::make_printable(buffer_.data()) << std::endl;
     }
     
-    void subscribe_orderbook(const std::string action,const std::string symbol, int levels)
+    void subscribe_orderbook(const std::string symbol, int levels)
     {
         symb = symbol;
         std::string stream = symbol+"@"+"depth"+std::to_string(levels);
@@ -206,7 +208,7 @@ public:
 
         };
         json jv = {
-            { "method", action },
+            { "method", "SUBSCRIBE" },
             { "params", {stream} },
             { "id", 1 }
         };
@@ -218,33 +220,66 @@ public:
 };
 
 
+
+void run_event_loop(const std::vector<std::string>& symbols, net::io_context& ioc, ssl::context& ctx)
+{
+    std::vector<std::shared_ptr<binanceWS>> ws_objects; // to make scope outside of for loop 
+    for (const auto& symbol : symbols) {
+        auto binancews = std::make_shared<binanceWS>(ioc.get_executor(), ctx);  
+        ws_objects.push_back(binancews);
+        binancews->subscribe_orderbook(symbol, 10);
+    }
+
+    ioc.run(); // this will block until all asynchronous operations have completed
+}
+
+void set_core_affinity(unsigned int core_id)
+{
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(core_id, &cpuset);
+
+    pthread_t current_thread = pthread_self();
+    pthread_setaffinity_np(current_thread, sizeof(cpu_set_t), &cpuset);
+}
+
 int main(){
-    net::io_context ioc; 
-    ssl::context ctx{ssl::context::tlsv12_client};
+    net::io_context ioc1; // shared between threads
+    ssl::context ctx1{ssl::context::tlsv12_client};
 
-    ctx.set_verify_mode(ssl::verify_peer);
-    ctx.set_default_verify_paths();
+    ctx1.set_verify_mode(ssl::verify_peer);
+    ctx1.set_default_verify_paths();
 
-    // Create the config
-    Configuration config = {
-        { "metadata.broker.list", "localhost:9092" }
-    };
+   const std::size_t num_cores = std::thread::hardware_concurrency(); 
 
-    std::map<std::string, int> dict = load_symbols_partition_map();
-    std::cout << dict["BTC/USD"] << std::endl;
-
-
-    // Create the producer
-    Producer producer(config);
-
-    // Produce a message!
-    std::string message = "hey there!";
-    producer.produce(MessageBuilder("binance-orderbook").partition(0).payload(message));
-    producer.flush();
-
+    std::vector<std::string> symbols;
+    std::map<std::string, int> partition_map = load_symbols_partition_map();
     
-    // auto binancews = std::make_shared<binanceWS>(ioc.get_executor(),ctx); 
-    // binancews->subscribe_orderbook("SUBSCRIBE","btcusdt",5);  
+    for (const auto& pair : partition_map) {
+        symbols.push_back(pair.first);
+    }
+    
+    std::vector<std::thread> threads;
+    // partition symbols into groups based on the number of available cores
+    std::vector<std::vector<std::string>> symbol_groups(num_cores);
 
-    // ioc.run();
+    std::size_t i = 0;
+    for (const auto& symbol : symbols) {
+        symbol_groups[i++ % num_cores].push_back(symbol);
+    }
+
+    for (unsigned int coreid = 0; coreid < symbol_groups.size(); coreid++) {
+        const auto& symbol_group = symbol_groups[coreid];
+        if(symbol_group.empty()){ // if symbols is less than number of cores you dont need to start the thread
+            continue;
+        }
+        threads.emplace_back([&symbol_group, &ioc1, &ctx1, coreid]() {
+            set_core_affinity(coreid);
+            run_event_loop(symbol_group, ioc1,ctx1); 
+        });
+    }
+
+    std::for_each(threads.begin(), threads.end(), [](std::thread& t) { t.join(); });
+
+ 
 }

@@ -17,6 +17,10 @@ boost/beast/ssl.hpp
 -
 cppkafka/cppkafka.h
 -
+pthread.h
+-
+sched.h
+-
 fstream
 -
 iomanip

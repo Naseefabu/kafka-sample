@@ -13,6 +13,9 @@
 #include <unistd.h>
 #include <system_error>
 #include <unordered_map>
+#include <pthread.h>
+#include <sched.h>
+
 
 namespace beast     = boost::beast;    
 namespace http      = beast::http;     
@@ -191,7 +194,7 @@ class coinbaseWS : public std::enable_shared_from_this<coinbaseWS>
 
         json payload = json::parse(beast::buffers_to_string(buffer_.cdata()));
         
-        // std::cout << "Coinbase Orderbook Response : " << payload << std::endl;
+        std::cout << "Coinbase Orderbook Response : " << payload << std::endl;
         std::map<std::string, int> partition_map = load_symbols_partition_map();
         int partition_id = partition_map[symb];
         std::string payload_str = payload.dump();
@@ -206,32 +209,68 @@ class coinbaseWS : public std::enable_shared_from_this<coinbaseWS>
 
 };
 
+void run_event_loop(const std::vector<std::string>& symbols, net::io_context& ioc, ssl::context& ctx)
+{
+    std::vector<std::shared_ptr<coinbaseWS>> ws_objects; // to make scope outside of for loop 
+    for (const auto& symbol : symbols) {
+        std::cout << symbol << std::endl;
+        auto coinbasews = std::make_shared<coinbaseWS>(ioc.get_executor(), ctx);  
+        ws_objects.push_back(coinbasews);
+        coinbasews->subscribe_orderbook(symbol);
+    }
+
+    ioc.run(); // this will block until all asynchronous operations have completed
+}
+
+void set_core_affinity(unsigned int core_id)
+{
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(core_id, &cpuset);
+
+    pthread_t current_thread = pthread_self();
+    pthread_setaffinity_np(current_thread, sizeof(cpu_set_t), &cpuset);
+}
+
 
 int main(){
 
-    net::io_context ioc; 
-    ssl::context ctx{ssl::context::tlsv12_client};
+    net::io_context ioc1; // shared between threads
+    ssl::context ctx1{ssl::context::tlsv12_client};
 
-    ctx.set_verify_mode(ssl::verify_peer);
-    ctx.set_default_verify_paths();
+    ctx1.set_verify_mode(ssl::verify_peer);
+    ctx1.set_default_verify_paths();
 
-    // Create the config
-    Configuration config = {
-        { "metadata.broker.list", "localhost:9092" }
-    };
+   const std::size_t num_cores = std::thread::hardware_concurrency(); 
 
-    // Create the producer
-    Producer producer(config);
-
-    // Produce a message!
-    // std::string message = "hey there coinbase!";
-    // producer.produce(MessageBuilder("coinbase-orderbook").partition(0).payload(message));
-    // producer.flush();
-
+    std::vector<std::string> symbols;
+    std::map<std::string, int> partition_map = load_symbols_partition_map();
     
-    auto coinbasews = std::make_shared<coinbaseWS>(ioc.get_executor(),ctx); 
-    std::string market = "ETH-USD";
-    coinbasews->subscribe_orderbook(market);  
+    for (const auto& pair : partition_map) {
+        symbols.push_back(pair.first);
+    }
+    
+    std::vector<std::thread> threads;
+    // partition symbols into groups based on the number of available cores
+    std::vector<std::vector<std::string>> symbol_groups(num_cores);
 
-    ioc.run();
+    std::size_t i = 0;
+    for (const auto& symbol : symbols) {
+        symbol_groups[i++ % num_cores].push_back(symbol);
+    }
+
+    for (unsigned int coreid = 0; coreid < symbol_groups.size(); coreid++) {
+        const auto& symbol_group = symbol_groups[coreid];
+        if(symbol_group.empty()){ // if symbols is less than number of cores you dont need to start the thread
+            continue;
+        }
+        threads.emplace_back([&symbol_group, &ioc1, &ctx1, coreid]() { 
+            set_core_affinity(coreid);
+            run_event_loop(symbol_group, ioc1,ctx1); 
+        
+        });
+    }
+
+    std::for_each(threads.begin(), threads.end(), [](std::thread& t) { t.join(); });
+
 }
