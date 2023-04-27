@@ -78,6 +78,7 @@ private:
     char const* host      = "stream.binance.com";
     char const* port      = "9443";
     std::function<void()> message_handler;
+    std::map<std::string, int> partition_map;
     std::string symb;
     Producer producer;
 
@@ -86,7 +87,9 @@ public:
         :resolver_(ex), ws_(ex, ctx),producer({
               { "metadata.broker.list", "localhost:9092" }
           })
-         {}
+         {
+            partition_map = load_symbols_partition_map();
+         }
 
     void run(char const* host, char const* port, json message, const std::string& streamName) {
         if (!SSL_set_tlsext_host_name(ws_.next_layer().native_handle(), host)) {
@@ -198,7 +201,6 @@ public:
             json payload = json::parse(beast::buffers_to_string(buffer_.cdata()));
             
             std::cout << "Binance Orderbook Response : " << payload << std::endl;
-            std::map<std::string, int> partition_map = load_symbols_partition_map();
             int partition_id = partition_map[symb];
             std::string payload_str = payload.dump();
             producer.produce(MessageBuilder("kraken-orderbook").partition(partition_id).payload(payload_str));

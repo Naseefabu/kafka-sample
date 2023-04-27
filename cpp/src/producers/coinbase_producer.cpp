@@ -76,6 +76,7 @@ class coinbaseWS : public std::enable_shared_from_this<coinbaseWS>
     std::string wsTarget_ = "/ws/";
     std::string host_;
     std::function<void()> message_handler;
+    std::map<std::string, int> partition_map;
     Producer producer;
 
 
@@ -87,7 +88,9 @@ class coinbaseWS : public std::enable_shared_from_this<coinbaseWS>
         , producer({
               { "metadata.broker.list", "localhost:9092" }
           })
-        {}
+        {
+            partition_map = load_symbols_partition_map();
+        }
 
     void run(json message) {
         if (!SSL_set_tlsext_host_name(ws_.next_layer().native_handle(), host)) {
@@ -195,7 +198,6 @@ class coinbaseWS : public std::enable_shared_from_this<coinbaseWS>
         json payload = json::parse(beast::buffers_to_string(buffer_.cdata()));
         
         std::cout << "Coinbase Orderbook Response : " << payload << std::endl;
-        std::map<std::string, int> partition_map = load_symbols_partition_map();
         int partition_id = partition_map[symb];
         std::string payload_str = payload.dump();
         producer.produce(MessageBuilder("coinbase-orderbook").partition(partition_id).payload(payload_str));
