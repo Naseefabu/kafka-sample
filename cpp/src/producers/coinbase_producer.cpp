@@ -209,9 +209,10 @@ class coinbaseWS : public std::enable_shared_from_this<coinbaseWS>
 
 };
 
-void run_event_loop(const std::vector<std::string>& symbols, net::io_context& ioc, ssl::context& ctx)
+void run_event_loop(const std::vector<std::string>& symbols, ssl::context& ctx)
 {
-    std::vector<std::shared_ptr<coinbaseWS>> ws_objects; // to make scope outside of for loop 
+    std::vector<std::shared_ptr<coinbaseWS>> ws_objects; // to make scope outside of for loop
+    net::io_context ioc; // one event loop per core 
     for (const auto& symbol : symbols) {
         std::cout << symbol << std::endl;
         auto coinbasews = std::make_shared<coinbaseWS>(ioc.get_executor(), ctx);  
@@ -235,7 +236,7 @@ void set_core_affinity(unsigned int core_id)
 
 int main(){
 
-    net::io_context ioc1; // shared between threads
+
     ssl::context ctx1{ssl::context::tlsv12_client};
 
     ctx1.set_verify_mode(ssl::verify_peer);
@@ -264,9 +265,9 @@ int main(){
         if(symbol_group.empty()){ // if symbols is less than number of cores you dont need to start the thread
             continue;
         }
-        threads.emplace_back([&symbol_group, &ioc1, &ctx1, coreid]() { 
+        threads.emplace_back([&symbol_group, &ctx1, coreid]() { 
             set_core_affinity(coreid);
-            run_event_loop(symbol_group, ioc1,ctx1); 
+            run_event_loop(symbol_group, ctx1); 
         
         });
     }
